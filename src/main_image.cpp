@@ -22,40 +22,42 @@
  * SOFTWARE.
  */
 
-#include <iostream>
 #include <kitti_parser/types/stereo_t.h>
 #include <kitti_parser/types/lidar_t.h>
-#include <cv.hpp>
 #include "kitti_parser/Parser.h"
 
+#include <opencv2/opencv.hpp>
+
+#include <iostream>
 
 
 using namespace std;
 using namespace kitti_parser;
 
 
-void handle_stereo_gray(Config* config, long timestamp, stereo_t* data);
-void handle_stereo_color(Config* config, long timestamp, stereo_t* data);
+void handle_stereo_gray(Config *config, long timestamp, stereo_t *data);
 
-int main(int argc, char** argv) {
+void handle_stereo_color(Config *config, long timestamp, stereo_t *data);
+
+int main(int argc, char **argv) {
 
     // Debug message
     cout << "[kitti_parser]: Starting up" << endl;
 
 
     // Check if there is a path to a dataset
-    if(argc != 2) {
+    if (argc != 2) {
         cerr << "[kitti_parser]: Error please specify a SINGLE dataset" << endl;
         return EXIT_FAILURE;
     }
 
     // Parse the input
     std::string data_path = argv[1];
-    std::string filename = data_path.substr(data_path.find_last_of("\\/")+1);
+    std::string filename = data_path.substr(data_path.find_last_of("\\/") + 1);
 
 
     // Debug message
-    cout << "[kitti_parser]: Opening Dataset \"" << filename << "\""<< endl;
+    cout << "[kitti_parser]: Opening Dataset \"" << filename << "\"" << endl;
 
 
     // Create the parser, pass it the path
@@ -91,17 +93,17 @@ int main(int argc, char** argv) {
 }
 
 
-void handle_stereo_gray(Config* config, long timestamp, stereo_t* data) {
+void handle_stereo_gray(Config *config, long timestamp, stereo_t *data) {
 
     // Image info
     cv::Size sz1 = data->image_left.size();
     cv::Size sz2 = data->image_right.size();
 
     // Create combined matrix
-    cv::Mat im3(sz1.height+sz2.height+5, sz1.width, CV_8UC1);
+    cv::Mat im3(sz1.height + sz2.height + 5, sz1.width, CV_8UC1);
     cv::Mat left(im3, cv::Rect(0, 0, sz1.width, sz1.height));
     data->image_left.copyTo(left);
-    cv::Mat right(im3, cv::Rect(0, sz1.height+5, sz2.width, sz2.height));
+    cv::Mat right(im3, cv::Rect(0, sz1.height + 5, sz2.width, sz2.height));
     data->image_right.copyTo(right);
 
     // Display it
@@ -114,17 +116,17 @@ void handle_stereo_gray(Config* config, long timestamp, stereo_t* data) {
 }
 
 
-void handle_stereo_color(Config* config, long timestamp, stereo_t* data) {
+void handle_stereo_color(Config *config, long timestamp, stereo_t *data) {
 
     // Image info
     cv::Size sz1 = data->image_left.size();
     cv::Size sz2 = data->image_right.size();
 
     // Create combined matrix
-    cv::Mat im3(sz1.height+sz2.height+5, sz1.width, CV_8UC3);
+    cv::Mat im3(sz1.height + sz2.height + 5, sz1.width, CV_8UC3);
     cv::Mat left(im3, cv::Rect(0, 0, sz1.width, sz1.height));
     data->image_left.copyTo(left);
-    cv::Mat right(im3, cv::Rect(0, sz1.height+5, sz2.width, sz2.height));
+    cv::Mat right(im3, cv::Rect(0, sz1.height + 5, sz2.width, sz2.height));
     data->image_right.copyTo(right);
 
     // Display it

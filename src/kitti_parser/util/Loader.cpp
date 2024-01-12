@@ -23,19 +23,16 @@
  */
 
 #include "kitti_parser/util/Loader.h"
+#include <kitti_parser/util/timestamp.hpp>
 #include <kitti_parser/types/stereo_t.h>
 #include <kitti_parser/types/lidar_t.h>
 #include <kitti_parser/types/gpsimu_t.h>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgcodecs.hpp>
-#include <opencv2/highgui/highgui.hpp>
-
-#include <boost/date_time.hpp>
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem.hpp>
 
 #include <fstream>
+#include <filesystem>
 #include <sstream>
 
 using namespace std;
@@ -122,7 +119,6 @@ void Loader::load_all(std::string path) {
  */
 void Loader::load_timestamps(std::string path_timestamp, std::vector<long> &time, int &ct) {
     // Open the timestamp file
-    std:
     string line;
     ifstream file_time(path_timestamp);
     // Load the timestamps
@@ -130,18 +126,10 @@ void Loader::load_timestamps(std::string path_timestamp, std::vector<long> &time
         // Skip empty lines
         if (line.empty())
             continue;
-        // Parse data
-        // http://www.boost.org/doc/libs/1_55_0/doc/html/date_time/posix_time.html#posix_ex
-        boost::posix_time::ptime pt(boost::posix_time::time_from_string(line));
-        // Convert to long, subtract
-        long temp = (pt - boost::posix_time::ptime{{1970, 1, 1},
-                                                   {}}).total_milliseconds();
-        // Append
-        time.push_back(temp);
+        // Parse data and append
+        time.push_back(toUnixTimestamp(line));
         // Incrememt
         ct++;
-        // Debug
-        //cout << line << " => " << temp << endl;
     }
     // Close file
     file_time.close();
@@ -161,25 +149,25 @@ void Loader::load_stereo(std::string path_left, std::string path_right, std::vec
 
     // Loop through all sub folders, assume they are sequential
     // http://www.boost.org/doc/libs/1_47_0/libs/filesystem/v3/example/tut4.cpp
-    boost::filesystem::path p1(path_left + "data/");
-    vector<boost::filesystem::path> v1;
-    copy(boost::filesystem::directory_iterator(p1), boost::filesystem::directory_iterator(), back_inserter(v1));
+    std::filesystem::path p1(path_left + "data/");
+    vector<std::filesystem::path> v1;
+    copy(std::filesystem::directory_iterator(p1), std::filesystem::directory_iterator(), back_inserter(v1));
     sort(v1.begin(), v1.end());
 
     // Append them
-    for (vector<boost::filesystem::path>::const_iterator it(v1.begin()), it_end(v1.end()); it != it_end; ++it) {
+    for (vector<std::filesystem::path>::const_iterator it(v1.begin()), it_end(v1.end()); it != it_end; ++it) {
         pathL.push_back((*it).c_str());
     }
 
     // Loop through all sub folders, assume they are sequential
     // http://www.boost.org/doc/libs/1_47_0/libs/filesystem/v3/example/tut4.cpp
-    boost::filesystem::path p2(path_right + "data/");
-    vector<boost::filesystem::path> v2;
-    copy(boost::filesystem::directory_iterator(p2), boost::filesystem::directory_iterator(), back_inserter(v2));
+    std::filesystem::path p2(path_right + "data/");
+    vector<std::filesystem::path> v2;
+    copy(std::filesystem::directory_iterator(p2), std::filesystem::directory_iterator(), back_inserter(v2));
     sort(v2.begin(), v2.end());
 
     // Append them
-    for (vector<boost::filesystem::path>::const_iterator it(v2.begin()), it_end(v2.end()); it != it_end; ++it) {
+    for (vector<std::filesystem::path>::const_iterator it(v2.begin()), it_end(v2.end()); it != it_end; ++it) {
         pathR.push_back((*it).c_str());
     }
 
@@ -205,16 +193,16 @@ void Loader::load_lidar(std::string path_lidar,
 
     // Loop through all sub folders, assume they are sequential
     // http://www.boost.org/doc/libs/1_47_0/libs/filesystem/v3/example/tut4.cpp
-    boost::filesystem::path p(path_lidar + "data/");
-    vector<boost::filesystem::path> v;
-    copy(boost::filesystem::directory_iterator(p), boost::filesystem::directory_iterator(), back_inserter(v));
+    std::filesystem::path p(path_lidar + "data/");
+    vector<std::filesystem::path> v;
+    copy(std::filesystem::directory_iterator(p), std::filesystem::directory_iterator(), back_inserter(v));
 
     // Sort, since directory iteration
     // Is not ordered on some file systems
     sort(v.begin(), v.end());
 
     // Append them
-    for (vector<boost::filesystem::path>::const_iterator it(v.begin()), it_end(v.end()); it != it_end; ++it) {
+    for (vector<std::filesystem::path>::const_iterator it(v.begin()), it_end(v.end()); it != it_end; ++it) {
         pathB.push_back((*it).c_str());
     }
 }
@@ -231,13 +219,13 @@ void Loader::load_gpsimu(std::string path_gpsimu, std::vector<long> &time, std::
 
     // Loop through all sub folders, assume they are sequential
     // http://www.boost.org/doc/libs/1_47_0/libs/filesystem/v3/example/tut4.cpp
-    boost::filesystem::path p1(path_gpsimu + "data/");
-    vector<boost::filesystem::path> v1;
-    copy(boost::filesystem::directory_iterator(p1), boost::filesystem::directory_iterator(), back_inserter(v1));
+    std::filesystem::path p1(path_gpsimu + "data/");
+    vector<std::filesystem::path> v1;
+    copy(std::filesystem::directory_iterator(p1), std::filesystem::directory_iterator(), back_inserter(v1));
     sort(v1.begin(), v1.end());
 
     // Append them
-    for (vector<boost::filesystem::path>::const_iterator it(v1.begin()), it_end(v1.end()); it != it_end; ++it) {
+    for (vector<std::filesystem::path>::const_iterator it(v1.begin()), it_end(v1.end()); it != it_end; ++it) {
         path.push_back((*it).c_str());
     }
 }

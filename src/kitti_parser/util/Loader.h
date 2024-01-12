@@ -25,16 +25,16 @@
 #ifndef KITTI_PARSER_LOADER_H
 #define KITTI_PARSER_LOADER_H
 
-#include <string>
-#include <iostream>
-#include <vector>
-#include <string>
-#include <boost/variant.hpp>
 #include "kitti_parser/util/Config.h"
 #include "kitti_parser/types/stereo_t.h"
 #include "kitti_parser/types/lidar_t.h"
 #include "kitti_parser/types/gpsimu_t.h"
 
+#include <string>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <variant>
 
 namespace kitti_parser {
 
@@ -50,7 +50,7 @@ namespace kitti_parser {
 
 
         // Fetches the latest measurement that should be processed
-        typedef boost::variant<stereo_t*, lidar_t*, gpsimu_t*> message_types;
+        typedef std::variant<stereo_t*, lidar_t*, gpsimu_t*> message_types;
         message_types* fetch_latest();
 
 

@@ -26,6 +26,7 @@
 #define KITTI_PARSER_LIDAR_H
 
 #include <array>
+#include <filesystem>
 #include <vector>
 
 
@@ -41,6 +42,7 @@ namespace kitti_parser {
 
         std::vector<std::array<float,4>> points;
 
+        std::filesystem::path path;
 
     } lidar_t;
 

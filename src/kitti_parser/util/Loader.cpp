@@ -294,15 +294,19 @@ stereo_t *Loader::fetch_stereo(size_t idx, bool is_color) {
     if (is_color) {
         next->is_color = true;
         next->timestamp = time_stereo_color.at(idx);
-        next->image_left = cv::imread(path_stereo_color_L.at(idx), cv::IMREAD_COLOR);
-        next->image_right = cv::imread(path_stereo_color_R.at(idx), cv::IMREAD_COLOR);
+        next->image_left_path = path_stereo_color_L.at(idx);
+        next->image_right_path = path_stereo_color_R.at(idx);
+        next->image_left = cv::imread(next->image_left_path, cv::IMREAD_COLOR);
+        next->image_right = cv::imread(next->image_right_path, cv::IMREAD_COLOR);
         next->width = next->image_left.cols;
         next->height = next->image_left.rows;
     } else {
         next->is_color = false;
         next->timestamp = time_stereo_gray.at(idx);
-        next->image_left = cv::imread(path_stereo_gray_L.at(idx), cv::IMREAD_GRAYSCALE);
-        next->image_right = cv::imread(path_stereo_gray_R.at(idx), cv::IMREAD_GRAYSCALE);
+        next->image_left_path = path_stereo_gray_L.at(idx);
+        next->image_right_path = path_stereo_gray_R.at(idx);
+        next->image_left = cv::imread(next->image_left_path, cv::IMREAD_GRAYSCALE);
+        next->image_right = cv::imread(next->image_right_path, cv::IMREAD_GRAYSCALE);
         next->width = next->image_left.cols;
         next->height = next->image_left.rows;
     }
@@ -326,7 +330,7 @@ lidar_t *Loader::fetch_lidar(size_t idx) {
     temp->timestamp = time_lidar_avg.at(idx);
     temp->timestamp_start = time_lidar_start.at(idx);
     temp->timestamp_end = time_lidar_end.at(idx);
-
+    temp->path = path_lidar.at(idx);
 
     // allocate 4 MB buffer (only ~130*4*4 KB are needed)
     int32_t num = 1000000;
@@ -340,7 +344,7 @@ lidar_t *Loader::fetch_lidar(size_t idx) {
 
     // load point cloud
     FILE *stream;
-    stream = fopen(path_lidar.at(idx).c_str(), "rb");
+    stream = fopen(temp->path.c_str(), "rb");
     num = fread(data, sizeof(float), num, stream) / 4;
     // Loop through and append points
     for (int32_t i = 0; i < num; i++) {
@@ -368,10 +372,11 @@ gpsimu_t *Loader::fetch_gpsimu(size_t idx) {
     // Make new measurement
     gpsimu_t *next = new gpsimu_t;
     next->timestamp = time_gpsimu.at(idx);
+    next->path = path_gpsimu.at(idx);
 
     // Read in file of doubles
     std::vector<double> values;
-    std::ifstream ifile(path_gpsimu.at(idx), std::ios::in);
+    std::ifstream ifile(next->path, std::ios::in);
 
     // Keep storing values from the text file so long as data exists:
     double num = 0.0;

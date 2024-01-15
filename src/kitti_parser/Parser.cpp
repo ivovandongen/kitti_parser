@@ -43,7 +43,7 @@ using namespace kitti_parser;
  * Also make sure we have the configuration information
  * Can preload all the details, so the run function can run
  */
-Parser::Parser(std::string path) {
+Parser::Parser(std::string path, DataSetFilter filter) {
 
     // Save with a slash
     // http://stackoverflow.com/a/4884579
@@ -147,6 +147,11 @@ Parser::Parser(std::string path) {
         // Skip if file
         if (!std::filesystem::is_directory(*it))
             continue;
+
+        if (!filter(*it)) {
+            std::cout << "Skipping filtered data set: " << it->filename() << std::endl;
+            continue;
+        }
 
         // Next sub folder
         string subfolder = (*it).c_str();

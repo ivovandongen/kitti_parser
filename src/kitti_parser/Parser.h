@@ -39,12 +39,14 @@
 
 namespace kitti_parser {
 
+    using DataSetFilter = std::function<bool(const std::filesystem::path&)>;
+
     class Parser {
 
     public:
 
         // Default constructor
-        Parser(std::string data_path);
+        Parser(std::string data_path, DataSetFilter = [](auto &) { return true; });
 
         // Returns the current config
         Config getConfig();

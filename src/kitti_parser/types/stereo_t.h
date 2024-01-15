@@ -27,6 +27,8 @@
 
 #include <opencv2/core/mat.hpp>
 
+#include <filesystem>
+
 namespace kitti_parser {
 
     typedef struct {
@@ -40,6 +42,9 @@ namespace kitti_parser {
 
         cv::Mat image_left;
         cv::Mat image_right;
+
+        std::filesystem::path image_left_path;
+        std::filesystem::path image_right_path;
 
     } stereo_t;
 

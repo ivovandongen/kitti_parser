@@ -26,6 +26,8 @@
 #ifndef KITTI_PARSER_GPSIMU_H
 #define KITTI_PARSER_GPSIMU_H
 
+#include <filesystem>
+
 namespace kitti_parser {
 
     typedef struct {
@@ -98,6 +100,8 @@ namespace kitti_parser {
         int velmode;
         // orimode:       orientation mode of primary GPS receiver (see gps_mode_to_string)
         int orimode;
+
+        std::filesystem::path path;
 
     } gpsimu_t;
 

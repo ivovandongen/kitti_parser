@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
+option(KITT_PARSER_ENABLE_TESTS "Enable tests" ON)
+
 # Include libraries
 find_package(OpenCV 4 REQUIRED core plot videoio ximgproc highgui)
 include(${PROJECT_SOURCE_DIR}/deps/yaml-cpp.cmake)
@@ -28,5 +30,7 @@ target_link_libraries(main_text kitti_parser opencv_highgui)
 add_executable(main_image ${PROJECT_SOURCE_DIR}/src/main_image.cpp)
 target_link_libraries(main_image kitti_parser opencv_highgui)
 
-enable_testing()
-add_subdirectory(test)
+if (KITT_PARSER_ENABLE_TESTS)
+    enable_testing()
+    add_subdirectory(test)
+endif ()
